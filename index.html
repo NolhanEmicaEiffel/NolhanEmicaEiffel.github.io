@@ -145,27 +145,18 @@
 
   <script>
   Promise.all([
-	  fetch('donnees/data.json').then(r => r.json()),
-	  fetch('donnees/actions.json').then(r => r.json()),
-	  fetch('donnees/indicators.json').then(r => r.json())
+	  fetch('data.json').then(r=>r.json()),
+	  fetch('actions.json').then(r=>r.json()),
+	  fetch('indicators.json').then(r=>r.json())
 	])
 	.then(([data, actions, indicators]) => {
-	  // 1) stocke-les dans des variables globales ou ferme-leur scope
 	  window.SD = { data, actions, indicators };
-	  
-	  // 2) lance ton init : création du chart, modal, jauge…
-	  initChart(data);
-	  initModal(actions);
-	  initGauge(indicators);
-
-	  // 3) associe les handlers et affiche !
-	  render();
+		
+	  initChart(window.SD.data);
+	  initModal(window.SD.actions);
+	  initGauge(window.SD.indicators);
 	})
-	.catch(err => console.error('Impossible de charger les JSON :', err));
-	
-	const data = windows.SD.data
-	const actions = windows.SD.actions
-	const indicators = windows.SD.indicators
+	.catch(err => console.error(err));
 	
 	let currentAxe = null; // null → global
 	
