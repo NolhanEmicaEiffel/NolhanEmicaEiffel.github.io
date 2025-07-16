@@ -152,9 +152,9 @@
 	.then(([data, actions, indicators]) => {
 	  window.SD = { data, actions, indicators };
 		
-	  initChart(window.SD.data);
-	  initModal(window.SD.actions);
-	  initGauge(window.SD.indicators);
+	  initModal(actions);
+	  initGauge(indicators);
+	  render(data);
 	})
 	.catch(err => console.error(err));
 	
@@ -320,7 +320,7 @@
   let tree, rootHierarchy, linkG, nodeG;
   const container = document.getElementById("chart");
 
-  function chart() {
+  function chart(data) {
 	  // 1) Dimensions du conteneur
 	  const W = window.innerWidth;
 	  const H = window.innerHeight;
@@ -468,9 +468,9 @@
 		});
 	}
 
-  function render() {
+  function render(data) {
     container.innerHTML = "";
-    container.appendChild(chart());
+    container.appendChild(chart(data));
     update();
   }
 
