@@ -1,4 +1,4 @@
-const indicators = [
+[
 	  { axe: "1.1.1", titre: "Etablissement labelisé", cible:"Obtention du label en 2025 pour 4 ans", respecte: true},
 	  { axe: "1.1.1", titre: "Renouvellement labellisation", cible:"garantie du renouvellement du label", respecte: false},
 	  { axe: "1.1.2", titre: "Création et diffusion d'une charte sur la communication responsable", cible:"OUI en 2024", respecte: false},
