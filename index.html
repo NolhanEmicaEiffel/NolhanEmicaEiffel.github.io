@@ -147,7 +147,7 @@
 Promise.all([
 	  fetch("data.json").then(res => res.json()),
 	  fetch("actions.json").then(res => res.json()),
-	  fetch("indicateurs.json").then(res => res.json())
+	  fetch("indicators.json").then(res => res.json())
 	]).then(([data, actions, indicators]) => {
 	
 	  renderTree(data);
