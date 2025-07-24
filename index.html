@@ -144,7 +144,23 @@
   <div id="modal-overlay"><div id="modal"></div></div>
 
   <script>
-  // ----- Vos données d'arbre (indicateurs retirés) -----
+Promise.all([
+	  fetch("data.json").then(res => res.json()),
+	  fetch("actions.json").then(res => res.json()),
+	  fetch("indicateurs.json").then(res => res.json())
+	]).then(([data, actions, indicators]) => {
+	  // Tu peux ici assigner les données à tes constantes
+	  const treeData     = data;
+	  const actionData   = actions;
+	  const indicatorData= indicators;
+	
+	  // Ensuite, tu appelles tes fonctions d’affichage ici
+	  renderTree(treeData);
+	  populateActions(actionData);
+	  drawGauge(indicatorData);
+	}).catch(error => {
+	  console.error("Erreur de chargement JSON :", error);
+	});
   const data = {
     name: "SCHEMA DIRECTEUR DD&RS",
     children: [
