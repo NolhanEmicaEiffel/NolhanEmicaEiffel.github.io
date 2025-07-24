@@ -149,10 +149,6 @@ Promise.all([
 	  fetch("actions.json").then(res => res.json()),
 	  fetch("indicateurs.json").then(res => res.json())
 	]).then(([data, actions, indicators]) => {
-	   
-	  const data     = data;
-	  const actions   = actions;
-	  const indicators= indicators;
 	
 	  renderTree(data);
 	  populateActions(actions);
