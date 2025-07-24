@@ -150,9 +150,7 @@ Promise.all([
 	  fetch("indicators.json").then(res => res.json())
 	]).then(([data, actions, indicators]) => {
 	
-	  renderTree(data);
-	  populateActions(actions);
-	  drawGauge(indicators);
+	  render();
 	}).catch(error => {
 	  console.error("Erreur de chargement JSON :", error);
 	});
