@@ -144,20 +144,25 @@
   <div id="modal-overlay"><div id="modal"></div></div>
 
   <script>
-let data, actions, indicators;
+fetch("indicateurs.json")
+  .then(res => {
+    console.log("Status:", res.status, res.headers.get("Content-Type"));
+    return res.arrayBuffer();
+  })
+  .then(buf => {
+    const bytes = new Uint8Array(buf).slice(0, 4);
+    console.log("Premiers octets (UTF-8 BOM ?):", bytes);
+    const text = new TextDecoder("utf-8").decode(buf);
+    console.log("Raw text (20 premiers chars):", JSON.stringify(text.slice(0, 20)));
+    try {
+      JSON.parse(text);
+      console.log("✅ JSON.parse() valide");
+    } catch(e) {
+      console.error("❌ JSON.parse() erreur:", e.message);
+    }
+  })
+  .catch(err => console.error("Fetch error:", err));
 
-Promise.all([
-  fetch("data.json").then(res => res.json()),
-  fetch("actions.json").then(res => res.json()),
-  fetch("indicators.json").then(res => res.json())
-]).then(([d, a, i]) => {
-  data = d;
-  actions = a;
-  indicators = i;
-  render();
-}).catch(error => {
-  console.error("Erreur de chargement JSON :", error);
-});
 	  
 let currentAxe = null; // null → global
 
