@@ -144,24 +144,23 @@
   <div id="modal-overlay"><div id="modal"></div></div>
 
   <script>
-fetch("indicateurs.json")
-  .then(res => {
-    console.log("Status:", res.status, res.headers.get("Content-Type"));
-    return res.arrayBuffer();
-  })
-  .then(buf => {
-    const bytes = new Uint8Array(buf).slice(0, 4);
-    console.log("Premiers octets (UTF-8 BOM ?):", bytes);
-    const text = new TextDecoder("utf-8").decode(buf);
-    console.log("Raw text (20 premiers chars):", JSON.stringify(text.slice(0, 20)));
-    try {
-      JSON.parse(text);
-      console.log("✅ JSON.parse() valide");
-    } catch(e) {
-      console.error("❌ JSON.parse() erreur:", e.message);
-    }
-  })
-  .catch(err => console.error("Fetch error:", err));
+let data, indicators, actions;
+
+Promise.all([
+  d3.json("tree-data.json"),      // votre données arborescentes
+  d3.json("indicateurs.json"),    // vos indicateurs
+  d3.json("actions.json")         // vos actions
+])
+.then(([treeData, indicateursJSON, actionsJSON]) => {
+  data       = treeData;
+  indicators = indicateursJSON;
+  actions    = actionsJSON;
+
+  render();        // crée le chart
+  updateGauge();   // initialise la jauge
+})
+.catch(err => console.error("Erreur de chargement JSON :", err));
+
 
 	  
 let currentAxe = null; // null → global
