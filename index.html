@@ -147,19 +147,20 @@
 let data, indicators, actions;
 
 Promise.all([
-  d3.json("tree-data.json"),      // votre données arborescentes
-  d3.json("indicateurs.json"),    // vos indicateurs
-  d3.json("actions.json")         // vos actions
+  d3.json("data.json"),       
+  d3.json("indicators.json"),
+  d3.json("actions.json")
 ])
 .then(([treeData, indicateursJSON, actionsJSON]) => {
-  data       = treeData;
+  data       = treeData;       
   indicators = indicateursJSON;
   actions    = actionsJSON;
 
-  render();        // crée le chart
-  updateGauge();   // initialise la jauge
+  render();        
+  updateGauge();  
 })
 .catch(err => console.error("Erreur de chargement JSON :", err));
+
 
 
 	  
