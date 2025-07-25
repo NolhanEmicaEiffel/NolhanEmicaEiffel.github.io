@@ -151,9 +151,9 @@ Promise.all([
   d3.json("indicators.json"),
   d3.json("actions.json")
 ])
-.then(([treeData, indicateursJSON, actionsJSON]) => {
+.then(([treeData, indicatorsJSON, actionsJSON]) => {
   data       = treeData;       
-  indicators = indicateursJSON;
+  indicators = indicatorsJSON;
   actions    = actionsJSON;
 
   render();        
