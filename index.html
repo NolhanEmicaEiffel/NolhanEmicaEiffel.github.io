@@ -5,321 +5,541 @@
   <title>Schéma directeur DD&RS</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; font-family:sans-serif; }
-    #chart { width:100vw; height:100vh; position:relative; }
-    #number-bar { position:absolute; top:10px; right:10px; display:flex; gap:4px; z-index:10; }
-    #number-bar button { width:28px; height:28px; background:#fff; border:1px solid #666; border-radius:4px; cursor:pointer; }
-    #number-bar button:hover { filter:brightness(1.2); }
-    #modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4);
-                      display:none; align-items:center; justify-content:center; z-index:20; }
-    #modal { background:#fff; padding:20px; border-radius:6px; width:60%; max-height:80%; overflow-y:auto;
-             box-shadow:0 2px 10px rgba(0,0,0,0.3); }
-    .action { margin-bottom:12px; border-bottom:1px solid #ddd; padding-bottom:8px; }
-    .action h4 { margin:0; cursor:pointer; font-size:16px; color:#2c3e50; }
-    .action p { margin:4px 0 0; display:none; font-size:14px; color:#444; }
-    #modal h3 { margin-bottom:12px; font-size:18px; color:#2c3e50; border-bottom:1px solid #ddd; padding-bottom:6px; }
-    /* Jauge */
-    #indicator-gauge { position:absolute; left:60px; top:50%; transform:translateY(-50%); z-index:15;
-                       display:flex; flex-direction:column; align-items:center; }
-    #gauge-bar { position:relative; width:16px; height:60vh; background:#eee; border:1px solid #999;
-                 border-radius:8px; overflow:hidden; margin-bottom:8px; }
-    #gauge-fill { position:absolute; bottom:0; width:100%; height:0%; background:#4caf50; transition:height .6s; }
-    #indicator-btn { display:flex; align-items:center; gap:6px; padding:8px 12px; font-size:14px; font-weight:bold;
-                     color:#fff; background:linear-gradient(135deg,#4caf50 0%,#66bb6a 100%);
-                     border:none; border-radius:24px; box-shadow:0 4px 8px rgba(0,0,0,0.2);
-                     cursor:pointer; transition:transform .2s,box-shadow .2s; }
-    #indicator-btn:hover { transform:translateY(-2px) scale(1.03); box-shadow:0 6px 12px rgba(0,0,0,0.25); }
-    #indicator-btn:active { transform:translateY(0) scale(.98); box-shadow:0 3px 6px rgba(0,0,0,0.2); }
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: sans-serif;
+      position: relative;
+    }
+    #chart {
+      width: 100vw; height: 100vh;
+    }
+    /* Barre des numéros */
+    #number-bar {
+      position: absolute; top: 10px; right: 10px;
+      display: flex; gap: 4px; z-index: 10;
+    }
+    #number-bar button {
+      width: 28px; height: 28px;
+      background: #fff; border: 1px solid #666;
+      border-radius: 4px; cursor: pointer;
+    }
+    #number-bar button:hover { background: #eee; }
+
+    /* Modal et overlay */
+    #modal-overlay {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: none; align-items: center;
+      justify-content: center; z-index: 20;
+    }
+    #modal {
+      background: #fff; padding: 20px;
+      border-radius: 6px; width: 60%;
+      max-height: 80%; overflow-y: auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .action {
+      margin-bottom: 12px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 8px;
+    }
+    .action h4 {
+      margin: 0; cursor: pointer;
+      font-size: 16px; color: #2c3e50;
+    }
+    .action p {
+      margin: 4px 0 0; display: none;
+      font-size: 14px; color: #444;
+    }
+	#chart, #chart svg {
+		overflow: visible;
+	}
+	#number-bar button:hover {
+		filter: brightness(1.2);
+	}
+	#modal h3 {
+		margin-bottom: 12px;
+		font-size: 18px;
+		color: #2c3e50;
+		border-bottom: 1px solid #ddd;
+		padding-bottom: 6px;
+	}
+	/* jauge */
+	#indicator-gauge {
+	  position: absolute;
+	  left: 60px;
+	  top: 50%;
+	  transform: translateY(-50%);
+	  width: 40px;
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  z-index: 15;
+	}
+
+	#gauge-bar {
+	  position: relative;
+	  width: 16px;
+	  height: 60vh;
+	  background: #eee;
+	  border: 1px solid #999;
+	  border-radius: 8px;
+	  overflow: hidden;
+	  margin-bottom: 8px;
+	}
+
+	#gauge-fill {
+	  position: absolute;
+	  bottom: 0;
+	  width: 100%;
+	  height: 0%;          /* mis à jour dynamiquement */
+	  background: #4caf50; /* vert si respecté */
+	  transition: height 0.6s;
+	}
+
+	#indicator-btn {
+	  display: flex;
+	  align-items: center;
+	  gap: 6px;                   /* espace entre icône et texte */
+	  padding: 8px 12px;
+	  font-size: 14px;
+	  font-weight: bold;
+	  color: #fff;
+	  background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+	  border: none;
+	  border-radius: 24px;         /* forme ronde/ovale */
+	  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+	  cursor: pointer;
+	  transition: transform 0.2s, box-shadow 0.2s;
+	}
+
+	#indicator-btn .btn-icon {
+	  font-size: 18px;             /* ajuste la taille de l’icône */
+	}
+
+	#indicator-btn:hover {
+	  transform: translateY(-2px) scale(1.03);
+	  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+	}
+
+	#indicator-btn:active {
+	  transform: translateY(0) scale(0.98);
+	  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+	}
+
   </style>
 </head>
 <body>
   <div id="indicator-gauge">
-    <div id="gauge-bar"><div id="gauge-fill"></div></div>
-    <button id="indicator-btn">Indicateurs</button>
+    <div id="gauge-bar">
+    	<div id="gauge-fill"></div>
+	   </div>
+	  <button id="indicator-btn">Indicateurs</button>
   </div>
   <div id="chart"></div>
   <div id="number-bar"></div>
   <div id="modal-overlay"><div id="modal"></div></div>
 
   <script>
-    console.log("🔄 Script chargé");
+let data, indicators, actions;
 
-    let data, indicators, actions, currentAxe = null;
+Promise.all([
+  d3.json("data.json"),       
+  d3.json("indicators.json"),
+  d3.json("actions.json")
+])
+.then(([treeData, indicatorsJSON, actionsJSON]) => {
+  data       = treeData;       
+  indicators = indicatorsJSON;
+  actions    = actionsJSON;
 
-    // Charge tout
-    Promise.all([
-      d3.json("data.json"),
-      d3.json("indicators.json"),
-      d3.json("actions.json")
-    ])
-    .then(([treeData, inds, acts]) => {
-      data       = treeData;
-      indicators = inds;
-      actions    = acts;
-      console.log("✅ JSON chargés :", { data, indicators, actions });
+  initNumberBar();
+  d3.select("#indicator-btn").on("click", openIndicatorsModal);
+  
+  window.addEventListener("resize", render);
+  render();        
+  updateGauge();  
+})
+.catch(err => console.error("Erreur de chargement JSON :", err));
 
-      initNumberBar();
-      d3.select("#indicator-btn").on("click", openIndicatorsModal);
+let currentAxe = null; // null → global
 
-      // Seulement après avoir data…
-      window.addEventListener("resize", render);
-      render();
-      updateGauge();
-    })
-    .catch(err => console.error("❌ Erreur JSON :", err));
+  const sdgColors = [
+	  "#E5243B", // 1
+	  "#DDA63A", // 2
+	  "#4C9F38", // 3
+	  "#C5192D", // 4
+	  "#FF3A21", // 5
+	  "#26BDE2", // 6
+	  "#FCC30B", // 7
+	  "#A21942", // 8
+	  "#FD6925", // 9
+	  "#DD1367", // 10
+	  "#FD9D24", // 11
+	  "#BF8B2E", // 12
+	  "#3F7E44", // 13
+	  "#0A97D9", // 14
+	  "#56C02B", // 15
+	  "#00689D", // 16
+	  "#19486A"  // 17
+  ];
+  const sdgNames = [
+	  "Pas de pauvreté",
+	  "Faim « zéro »",
+	  "Bonne santé et bien-être",
+	  "Éducation de qualité",
+	  "Égalité entre les sexes",
+	  "Eau propre et assainissement",
+	  "Énergie propre et d’un coût abordable",
+	  "Travail décent et croissance économique",
+	  "Industrie, innovation et infrastructure",
+	  "Inégalités réduites",
+	  "Villes et communautés durables",
+	  "Consommation et production responsables",
+	  "Mesures relatives à la lutte contre les changements climatiques",
+	  "Vie aquatique",
+	  "Vie terrestre",
+	  "Paix, justice et institutions efficaces",
+	  "Partenariats pour la réalisation des objectifs"
+	];
+	
+	const bar = d3.select("#number-bar");
+	for (let i = 1; i <= 17; i++) {
+	  bar.append("button")
+		 .text(i)
+		 .style("background-color", sdgColors[i - 1])
+		 .style("border",        `1px solid ${sdgColors[i - 1]}`)
+		 .style("color",         "#fff")
+		 .on("click", () => {
+		   const list  = actions.filter(a => a.num.includes(i));
+		   const title = `${i}. ${sdgNames[i - 1]}`;
+		   openModal(list, title);
+		 });
+	}
 
-    function initNumberBar(){
-      const sdgColors = [
-        "#E5243B","#DDA63A","#4C9F38","#C5192D","#FF3A21",
-        "#26BDE2","#FCC30B","#A21942","#FD6925","#DD1367",
-        "#FD9D24","#BF8B2E","#3F7E44","#0A97D9","#56C02B",
-        "#00689D","#19486A"
-      ];
-      const sdgNames = [
-        "Pas de pauvreté","Faim « zéro »","Bonne santé","Éducation",
-        "Égalité","Eau propre","Énergie","Travail décent",
-        "Industrie","Inégalités","Villes","Consommation",
-        "Climat","Vie aquatique","Vie terrestre","Paix","Partenariats"
-      ];
-      const bar = d3.select("#number-bar");
-      for(let i=1; i<=17; i++){
-        bar.append("button")
-           .text(i)
-           .style("background-color",sdgColors[i-1])
-           .style("border",`1px solid ${sdgColors[i-1]}`)
-           .style("color","#fff")
-           .on("click",()=>{
-             const list = actions.filter(a=> a.num.includes(i));
-             const title = `${i}. ${sdgNames[i-1]}`;
-             openModal(list,title);
-           });
+  // ----- Modal -----
+	const overlay = d3.select("#modal-overlay");
+	const modal   = d3.select("#modal");
+	function openModal(list, title) {
+		  modal.html("");             // on vide
+
+		  // si un titre existe, on l'affiche
+		  if (title) {
+			modal.append("h3").text(title);
+		  }
+
+		  // puis le contenu
+		  if (list.length === 0) {
+			modal.append("p").text("Aucune action trouvée.");
+		  } else {
+			list.forEach(a => {
+				  const blk = modal.append("div").attr("class","action");
+
+				  // 1) on crée le <h4> et on le stocke dans une variable
+				  const h4 = blk.append("h4")
+					.text(`${a.axe} – ${a.titre}`)
+					.on("click", function() {
+					  const p = d3.select(this.parentNode).select("p");
+					  p.style("display", p.style("display")==="none" ? "block" : "none");
+					});
+
+				  // 2) on remplit le h4 en fonction de la présence d’une url
+				  let htmlDesc = a.description;
+				  if (a.url) {
+					htmlDesc +=
+						` <a href="${a.url}" target="_blank" rel="noopener noreferrer">
+						En savoir plus
+						</a>`;
+					}
+
+				   blk.append("p")
+					.style("display","none")
+					.html(htmlDesc);
+				   });
+		  }
+
+		  overlay.style("display","flex");
+	}
+
+	
+  overlay.on("click", e => {
+    if (e.target.id === "modal-overlay")
+      overlay.style("display","none");
+  });
+
+  // ----- Paramètres D3 -----
+  const PARAM = { margin: 80, circleRadii: [14,10,6], textWidth: 250, lineHeight: 1 };
+  const COLORS = { root: "#2d2d7b", axes: ["#8b4a96","#d21f3b","#ee7c04","#92c56d","#00936d","#1dafd1"] };
+
+  function wrap(text, width = PARAM.textWidth) {
+    text.each(function() {
+      const t = d3.select(this);
+      const words = t.text().split(/\s+/).reverse();
+      let line = [], lineNumber = 0;
+      let tspan = t.text(null)
+        .append("tspan").attr("x", t.attr("x")).attr("y", t.attr("y")).attr("dy","0em");
+      while (words.length) {
+        line.push(words.pop());
+        tspan.text(line.join(" "));
+        if (tspan.node().getComputedTextLength() > width) {
+          line.pop(); tspan.text(line.join(" "));
+          line = [words.pop()];
+          tspan = t.append("tspan")
+                  .attr("x", t.attr("x"))
+                  .attr("y", t.attr("y"))
+                  .attr("dy", ++lineNumber * PARAM.lineHeight + "em")
+                  .text(line[0]);
+        }
       }
-    }
-
-    function render(){
-      console.log("▶️ render() appelé, data défini ?", !!data);
-      if(!data) return;
-
-      const container = document.getElementById("chart");
-      console.log(" → nettoyage du container #chart");
-      container.innerHTML = "";
-
-      console.log(" → appel chart()");
-      const svgEl = chart();
-      console.log(" ← chart() a retourné :", svgEl.tagName, svgEl.getAttribute("viewBox"));
-      container.appendChild(svgEl);
-
-      console.log(" → appel update()");
-      update();
-    }
-
-    // Construction du graphique radial
-    const PARAM = { margin: 80, circleRadii: [14,10,6], textWidth: 250, lineHeight: 1 };
-    const COLORS = { root: "#2d2d7b", axes: ["#8b4a96","#d21f3b","#ee7c04","#92c56d","#00936d","#1dafd1"] };
-
-    let tree, rootHierarchy, linkG, nodeG;
-    function chart() {
-      const W = window.innerWidth, H = window.innerHeight;
-      const radius = Math.min(W,H)/2 - PARAM.margin;
-
-      tree = d3.tree().size([2*Math.PI, radius]);
-      rootHierarchy = d3.hierarchy(data);
-      let id = 0;
-      rootHierarchy.each(d => { d.id = id++; d._children = d.children; });
-      if (rootHierarchy.children) rootHierarchy.children.forEach(collapseAll);
-      applyColors(rootHierarchy);
-      tree(rootHierarchy);
-
-      const M = PARAM.margin + 20;
-      const svg = d3.create("svg")
-        .attr("viewBox", [-W/2 - M, -H/2 - M, W + 2*M, H + 2*M])
-        .style("overflow","visible")
-        .style("user-select","none")
-        .style("font","12px sans-serif");
-
-      linkG = svg.append("g").attr("class","links");
-      nodeG = svg.append("g").attr("class","nodes");
-
-      update();
-      return svg.node();
-    }
-
-    function update() {
-      tree(rootHierarchy);
-      applyColors(rootHierarchy);
-
-      const diag = d3.linkRadial().angle(d=>d.x).radius(d=>d.y);
-      linkG.selectAll("path.link")
-        .data(rootHierarchy.links(), d=>d.target.id)
-        .join(
-          enter => enter.append("path")
-                        .attr("class","link")
-                        .attr("fill","none")
-                        .attr("stroke","#999")
-                        .attr("d", diag),
-          upd   => upd.transition().duration(300).attr("d", diag),
-          exit  => exit.transition().duration(300).remove()
-        );
-
-      const nodeSel = nodeG.selectAll("g.node")
-        .data(rootHierarchy.descendants(), d=>d.id);
-
-      const enterSel = nodeSel.enter().append("g").attr("class","node");
-      enterSel.append("circle")
-        .attr("r", d=>PARAM.circleRadii[Math.min(d.depth,2)])
-        .attr("fill", d=>d.color)
-        .attr("stroke","#333");
-      enterSel.append("text")
-        .attr("dx", d=> d.depth===0 ? 0 : (d.x < Math.PI ? 8 : -8))
-        .attr("dy", d=> d.depth===0 ? "-0.6em" : "0.31em")
-        .attr("text-anchor", d=> d.depth===0 ? "middle" : (d.x<Math.PI?"start":"end"))
-        .style("font-weight", d=> d.depth<=1?"bold":"normal")
-        .style("font-size", d=> d.depth===0?"30px": d.depth===1?"14px":"10px")
-        .style("fill", d=> d.color)
-        .call(wrap);
-
-      const allSel = enterSel.merge(nodeSel);
-      allSel.select("text").text(d=>d.data.name);
-
-      allSel.on("click", (ev,d) => {
-        if (d.depth === 0) {
-          currentAxe = null;
-          if (rootHierarchy.children) rootHierarchy.children.forEach(collapseAll);
-          update(); updateGauge();
-          return;
-        }
-        if (d.depth === 1) {
-          const code = d.data.name.split(".")[0];
-          currentAxe = currentAxe===code?null:code;
-          updateGauge();
-        }
-        if (d.children) collapseAll(d);
-        else if (d._children) {
-          d.parent.children.forEach(sib => { if (sib!==d) collapseAll(sib); });
-          d.children = d._children;
-        }
-        update();
-        if (!d.children && !d._children) {
-          const code = d.data.name.split(" ")[0];
-          openModal(actions.filter(a=>a.axe===code), d.data.name);
-        }
-      });
-
-      nodeSel.exit().remove();
-      nodeG.selectAll("g.node")
-        .transition().duration(300)
-        .attr("transform", d => {
-          const a = d.x - Math.PI/2;
-          return `translate(${d.y*Math.cos(a)},${d.y*Math.sin(a)})`;
-        });
-    }
-
-    // Helpers
-
-    function wrap(text) {
-      text.each(function() {
-        const t = d3.select(this);
-        const words = t.text().split(/\s+/).reverse();
-        let line = [], lineNum = 0;
-        let tspan = t.text(null)
-                    .append("tspan")
-                    .attr("x", t.attr("x"))
-                    .attr("y", t.attr("y"))
-                    .attr("dy","0em");
-        while (words.length) {
-          line.push(words.pop());
-          tspan.text(line.join(" "));
-          if (tspan.node().getComputedTextLength() > PARAM.textWidth) {
-            line.pop();
-            tspan.text(line.join(" "));
-            line = [words.pop()];
-            tspan = t.append("tspan")
-                     .attr("x", t.attr("x"))
-                     .attr("y", t.attr("y"))
-                     .attr("dy", ++lineNum * PARAM.lineHeight + "em")
-                     .text(line[0]);
-          }
-        }
-      });
-    }
-
-    function collapseAll(node) {
-      (node.children ?? []).forEach(child => {
-        child._children = child.children;
-        collapseAll(child);
-        child.children = null;
-      });
-    }
-
-    function applyColors(root) {
-      root.color = COLORS.root;
-      if (root.children) {
-        root.children.forEach((d,i) => d.color = COLORS.axes[i % COLORS.axes.length]);
-      }
-      root.each(d => {
-        if (d.depth > 1) {
-          let anc = d; while (anc.depth > 1) anc = anc.parent;
-          const factor = 0.7 + 0.3 * (d.depth - 1);
-          d.color = d3.color(anc.color).brighter(factor).formatHex();
-        }
-      });
-    }
-
-    function computeRatio() {
-      const subset = currentAxe === null
-        ? indicators
-        : indicators.filter(ind => ind.axe.startsWith(currentAxe + "."));
-      const total = subset.length;
-      const passed = subset.filter(ind => ind.respecte).length;
-      return total === 0 ? 0 : passed / total;
-    }
-
-    function updateGauge() {
-      const ratio = computeRatio();
-      d3.select("#gauge-fill")
-        .style("height", (ratio * 100) + "%");
-    }
-
-    // Modal pour actions ou indicateurs
-    const overlay = d3.select("#modal-overlay");
-    const modal   = d3.select("#modal");
-
-    function openModal(list, title) {
-      modal.html("");
-      if (title) modal.append("h3").text(title);
-
-      if (!list.length) {
-        modal.append("p").text("Aucune entrée trouvée.");
-      } else {
-        list.forEach(a => {
-          const blk = modal.append("div").attr("class","action");
-          blk.append("h4")
-             .text(a.axe ? `${a.axe} – ${a.titre}` : a.titre)
-             .on("click", function() {
-               const p = d3.select(this.parentNode).select("p");
-               p.style("display", p.style("display")==="none"?"block":"none");
-             });
-          let html = a.description || "";
-          if (a.url) html += ` <a href="${a.url}" target="_blank">En savoir plus</a>`;
-          blk.append("p").style("display","none").html(html);
-        });
-      }
-      overlay.style("display","flex");
-    }
-
-    function openIndicatorsModal() {
-      const title = currentAxe===null ? "Indicateurs globaux" : `Indicateurs axe ${currentAxe}`;
-      const list  = currentAxe===null
-        ? indicators
-        : indicators.filter(ind => ind.axe.startsWith(currentAxe + "."));
-      
-      openModal(list, title);
-    }
-
-    overlay.on("click", e => {
-      if (e.target.id === "modal-overlay")
-        overlay.style("display","none");
     });
+  }
+
+  function collapseAll(node) {
+    if (node.children) {
+      node._children = node.children;
+      node._children.forEach(collapseAll);
+      node.children = null;
+    }
+  }
+
+  function applyColors(root) {
+    root.color = COLORS.root;
+    if (root.children) {
+      root.children.forEach((d,i) => d.color = COLORS.axes[i % COLORS.axes.length]);
+    }
+    root.each(d => {
+      if (d.depth > 1) {
+        let anc = d; while (anc.depth > 1) anc = anc.parent;
+        const factor = 0.7 + 0.3*(d.depth-1);
+        d.color = d3.color(anc.color).brighter(factor).formatHex();
+      }
+    });
+  }
+
+  let tree, rootHierarchy, linkG, nodeG;
+  const container = document.getElementById("chart");
+
+  function chart() {
+	  // 1) Dimensions du conteneur
+	  const W = window.innerWidth;
+	  const H = window.innerHeight;
+
+	  // 2) Calcul du rayon en tenant compte de la marge
+	  const radius = Math.min(W, H) / 2 - PARAM.margin;
+
+	  // 3) Configuration du tree layout et de la hiérarchie
+	  tree = d3.tree().size([2 * Math.PI, radius]);
+	  rootHierarchy = d3.hierarchy(data);
+	  let id = 0;
+	  rootHierarchy.each(d => {
+		d.id = id++;
+		d._children = d.children;
+	  });
+	  if (rootHierarchy.children) {
+		rootHierarchy.children.forEach(collapseAll);
+	  }
+	  applyColors(rootHierarchy);
+	  tree(rootHierarchy);
+
+	  // 4) Création du SVG avec viewBox centré et marge tampon
+	  const M = PARAM.margin + 20;      // 20px de buffer supplémentaire
+	  const svg = d3.create("svg")
+		.attr(
+		  "viewBox",
+		  [
+			-W / 2 - M,
+			-H / 2 - M,
+			 W   + 2 * M,
+			 H   + 2 * M
+		  ]
+		)
+		.style("overflow", "visible")
+		.style("user-select", "none")
+		.style("font", "12px sans-serif");
+
+	  // 5) Groupes pour les liens et les nœuds (pas de translate !)
+	  linkG = svg.append("g").attr("class", "links");
+	  nodeG = svg.append("g").attr("class", "nodes");
+
+	  // 6) Premier rendu
+	  update();
+
+	  return svg.node();
+	}
+
+  function update() {
+	  tree(rootHierarchy);
+	  applyColors(rootHierarchy);
+
+	  // 1) Liens inchangés
+	  const diag = d3.linkRadial().angle(d=>d.x).radius(d=>d.y);
+	  linkG.selectAll("path.link")
+		.data(rootHierarchy.links(), d=>d.target.id)
+		.join(
+		  enter => enter.append("path")
+						.attr("class","link")
+						.attr("fill","none")
+						.attr("stroke","#999")
+						.attr("d", diag),
+		  upd   => upd.transition().duration(300).attr("d", diag),
+		  exit  => exit.transition().duration(300).remove()
+		);
+
+	  // 2) Nœuds : bind data → enter/merge/exit sur <g>
+	  const nodeSel = nodeG.selectAll("g.node")
+		.data(rootHierarchy.descendants(), d => d.id);
+
+	  // ENTER : créer <g>, <circle> et <text>
+	  const enterSel = nodeSel.enter()
+		.append("g")
+		  .attr("class","node");
+
+	  enterSel.append("circle")
+		.attr("r", d=>PARAM.circleRadii[Math.min(d.depth,2)])
+		.attr("fill", d=>d.color)
+		.attr("stroke","#333");
+
+	  enterSel.append("text")
+		.attr("dx", d => d.depth === 0
+			? 0
+			: (d.x < Math.PI ? 8 : -8)
+			)
+		.attr("dy", d => d.depth === 0
+			? "-0.6em"
+			: "0.31em"
+			)
+		.attr("text-anchor", d => d.depth === 0
+			? "middle"
+			: (d.x < Math.PI ? "start" : "end")
+			)
+		.style("font-weight", d=> d.depth<=1 ? "bold":"normal")
+		.style("font-size", d=> d.depth===0?"30px": d.depth===1?"14px":"10px")
+		.style("fill", d=>d.color)
+		.call(wrap);
+
+	  // MERGE : selection complète <g> (enter + update)
+	  const allSel = enterSel.merge(nodeSel);
+
+	  // Met à jour le texte pour tous
+	  allSel.select("text")
+		.text(d => d.data.name);
+
+	  // 3) Binder le clic sur tous les <g>
+	  allSel.on("click", (ev, d) => {
+	  
+		if (d.depth === 0) {
+		  currentAxe = null;
+		  if (rootHierarchy.children) {
+			rootHierarchy.children.forEach(collapseAll);
+		  }
+		  update()
+		  updateGauge();
+		  return;		  
+	    }
+		
+		if (d.depth === 1) {
+		  const code = d.data.name.split(".")[0];
+		  currentAxe = currentAxe === code ? null : code;
+		  updateGauge();
+		}
+		if (d.children) collapseAll(d);
+		else if (d._children) {
+		  const p = d.parent;
+		  if (p && p.children) p.children.forEach(sib => { if (sib !== d) collapseAll(sib); });
+		  d.children = d._children;
+		}
+		update();
+		if (!d.children && !d._children) {
+		  const code = d.data.name.split(" ")[0];
+		  openModal(actions.filter(a=>a.axe===code), d.data.name);
+		}
+	  });
+
+	  // 4) EXIT
+	  nodeSel.exit().remove();
+
+	  // 5) POSITIONNE
+	  nodeG.selectAll("g.node")
+		.transition().duration(300)
+		.attr("transform", d => {
+		  const a = d.x - Math.PI/2;
+		  return `translate(${d.y*Math.cos(a)},${d.y*Math.sin(a)})`;
+		});
+	}
+
+  function render() {
+    if(data!) return;
+	  const container = document.getElementById("chart");
+	  container.innerHTML = "";
+	  container.appendChild(chart());    
+	  update();                          
+  }
+
+  window.addEventListener("resize", render);
+  render();
+	  function computeRatio() {
+	  let subset;
+	  if (currentAxe === null) {
+		subset = indicators;
+	  } else {
+		const prefix = currentAxe + ".";
+		subset = indicators.filter(ind => ind.axe.startsWith(prefix));
+	  }
+	  const total  = subset.length;
+	  const passed = subset.filter(ind => ind.respecte).length;
+	  return total === 0 ? 0 : passed / total;
+	}
+
+	function updateGauge() {
+	  const ratio = computeRatio();
+	  d3.select("#gauge-fill")
+		.style("height", (ratio * 100) + "%");
+	}
+
+	// ouverture modal des indicateurs
+	function openIndicatorsModal() {
+	  const m     = d3.select("#modal").html("");
+	  const title = currentAxe === null
+		? "Indicateurs globaux"
+		: `Indicateurs axe ${currentAxe}`;
+	  m.append("h3").text(title);
+
+	  const list = currentAxe === null
+		? indicators
+		: indicators.filter(ind => ind.axe.startsWith(currentAxe + "."));
+
+	  if (!list.length) {
+		m.append("p").text("Aucun indicateur trouvé.");
+	  } else {
+		list.forEach(ind => {
+		  const row = m.append("div").attr("class","action");
+		  row.append("h4").text(`${ind.axe} – ${ind.titre}`)
+			 .on("click", () => {
+			   const p = row.select("p");
+			   p.style("display", p.style("display")==="none"?"block":"none");
+			 });
+		  row.append("p")
+			 .style("display","none")
+			 .text(`Cible : ${ind.cible}    ,Respecté : ${ind.respecte?"OUI":"NON"}`);
+		});
+	  }
+	  d3.select("#modal-overlay").style("display","flex");
+	}
+
+	// bouton jauge
+	d3.select("#indicator-btn").on("click", openIndicatorsModal);
+
+	// déclencher la mise à jour au chargement
+	updateGauge();
+
+	// Mettre à jour currentAxe et jauge à chaque clic d’axe
+	function onAxeSelected(code) {
+	  currentAxe = code;   
+	  updateGauge();
+	}
   </script>
 </body>
 </html>
