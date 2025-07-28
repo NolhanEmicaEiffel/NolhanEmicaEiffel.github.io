@@ -471,7 +471,7 @@ let currentAxe = null; // null → global
 	}
 
   function render() {
-    if(data!) return;
+    if(!data) return;
 	  const container = document.getElementById("chart");
 	  container.innerHTML = "";
 	  container.appendChild(chart());    
