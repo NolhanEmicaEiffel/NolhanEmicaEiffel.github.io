@@ -5,145 +5,48 @@
   <title>Schéma directeur DD&RS</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    html, body {
-      margin: 0; padding: 0;
-      width: 100%; height: 100%;
-      overflow: hidden;
-      font-family: sans-serif;
-      position: relative;
-    }
-    #chart {
-      width: 100vw; height: 100vh;
-    }
-    /* Barre des numéros */
-    #number-bar {
-      position: absolute; top: 10px; right: 10px;
-      display: flex; gap: 4px; z-index: 10;
-    }
-    #number-bar button {
-      width: 28px; height: 28px;
-      background: #fff; border: 1px solid #666;
-      border-radius: 4px; cursor: pointer;
-    }
-    #number-bar button:hover { filter: brightness(1.2); }
-
-    /* Modal et overlay */
-    #modal-overlay {
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
-      display: none; align-items: center;
-      justify-content: center; z-index: 20;
-    }
-    #modal {
-      background: #fff; padding: 20px;
-      border-radius: 6px; width: 60%;
-      max-height: 80%; overflow-y: auto;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    }
-    .action {
-      margin-bottom: 12px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 8px;
-    }
-    .action h4 {
-      margin: 0; cursor: pointer;
-      font-size: 16px; color: #2c3e50;
-    }
-    .action p {
-      margin: 4px 0 0; display: none;
-      font-size: 14px; color: #444;
-    }
-    #modal h3 {
-      margin-bottom: 12px;
-      font-size: 18px;
-      color: #2c3e50;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 6px;
-    }
-
+    html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; font-family:sans-serif; }
+    #chart { width:100vw; height:100vh; position:relative; }
+    #number-bar { position:absolute; top:10px; right:10px; display:flex; gap:4px; z-index:10; }
+    #number-bar button { width:28px; height:28px; background:#fff; border:1px solid #666; border-radius:4px; cursor:pointer; }
+    #number-bar button:hover { filter:brightness(1.2); }
+    #modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4);
+                      display:none; align-items:center; justify-content:center; z-index:20; }
+    #modal { background:#fff; padding:20px; border-radius:6px; width:60%; max-height:80%; overflow-y:auto;
+             box-shadow:0 2px 10px rgba(0,0,0,0.3); }
+    .action { margin-bottom:12px; border-bottom:1px solid #ddd; padding-bottom:8px; }
+    .action h4 { margin:0; cursor:pointer; font-size:16px; color:#2c3e50; }
+    .action p { margin:4px 0 0; display:none; font-size:14px; color:#444; }
+    #modal h3 { margin-bottom:12px; font-size:18px; color:#2c3e50; border-bottom:1px solid #ddd; padding-bottom:6px; }
     /* Jauge */
-    #indicator-gauge {
-      position: absolute;
-      left: 60px; top: 50%;
-      transform: translateY(-50%);
-      width: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 15;
-    }
-    #gauge-bar {
-      position: relative;
-      width: 16px; height: 60vh;
-      background: #eee;
-      border: 1px solid #999;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-    #gauge-fill {
-      position: absolute;
-      bottom: 0; width: 100%; height: 0%;
-      background: #4caf50;
-      transition: height 0.6s;
-    }
-    #indicator-btn {
-      display: flex; align-items: center; gap: 6px;
-      padding: 8px 12px; font-size: 14px; font-weight: bold;
-      color: #fff;
-      background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
-      border: none; border-radius: 24px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    #indicator-btn:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.25);
-    }
-    #indicator-btn:active {
-      transform: translateY(0) scale(0.98);
-      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-    }
+    #indicator-gauge { position:absolute; left:60px; top:50%; transform:translateY(-50%); z-index:15;
+                       display:flex; flex-direction:column; align-items:center; }
+    #gauge-bar { position:relative; width:16px; height:60vh; background:#eee; border:1px solid #999;
+                 border-radius:8px; overflow:hidden; margin-bottom:8px; }
+    #gauge-fill { position:absolute; bottom:0; width:100%; height:0%; background:#4caf50; transition:height .6s; }
+    #indicator-btn { display:flex; align-items:center; gap:6px; padding:8px 12px; font-size:14px; font-weight:bold;
+                     color:#fff; background:linear-gradient(135deg,#4caf50 0%,#66bb6a 100%);
+                     border:none; border-radius:24px; box-shadow:0 4px 8px rgba(0,0,0,0.2);
+                     cursor:pointer; transition:transform .2s,box-shadow .2s; }
+    #indicator-btn:hover { transform:translateY(-2px) scale(1.03); box-shadow:0 6px 12px rgba(0,0,0,0.25); }
+    #indicator-btn:active { transform:translateY(0) scale(.98); box-shadow:0 3px 6px rgba(0,0,0,0.2); }
   </style>
 </head>
 <body>
-
   <div id="indicator-gauge">
-    <div id="gauge-bar">
-      <div id="gauge-fill"></div>
-    </div>
+    <div id="gauge-bar"><div id="gauge-fill"></div></div>
     <button id="indicator-btn">Indicateurs</button>
   </div>
-
   <div id="chart"></div>
   <div id="number-bar"></div>
   <div id="modal-overlay"><div id="modal"></div></div>
 
   <script>
-    // Variables globales
+    console.log("🔄 Script chargé");
+
     let data, indicators, actions, currentAxe = null;
 
-    // Couleurs et noms des objectifs
-    const sdgColors = [
-      "#E5243B","#DDA63A","#4C9F38","#C5192D","#FF3A21",
-      "#26BDE2","#FCC30B","#A21942","#FD6925","#DD1367",
-      "#FD9D24","#BF8B2E","#3F7E44","#0A97D9","#56C02B",
-      "#00689D","#19486A"
-    ];
-    const sdgNames = [
-      "Pas de pauvreté","Faim « zéro »","Bonne santé et bien-être",
-      "Éducation de qualité","Égalité entre les sexes",
-      "Eau propre et assainissement","Énergie propre et abordable",
-      "Travail décent et croissance","Industrie, innovation et infrastructure",
-      "Inégalités réduites","Villes et communautés durables",
-      "Consommation et production responsables",
-      "Lutte contre les changements climatiques","Vie aquatique",
-      "Vie terrestre","Paix et justice","Partenariats"
-    ];
-
-    // Chargement des JSON
+    // Charge tout
     Promise.all([
       d3.json("data.json"),
       d3.json("indicators.json"),
@@ -153,40 +56,60 @@
       data       = treeData;
       indicators = inds;
       actions    = acts;
+      console.log("✅ JSON chargés :", { data, indicators, actions });
 
       initNumberBar();
       d3.select("#indicator-btn").on("click", openIndicatorsModal);
 
-      // Seul moment où l’on dessine l’arbre
+      // Seulement après avoir data…
       window.addEventListener("resize", render);
       render();
       updateGauge();
     })
-    .catch(err => console.error("Erreur de chargement JSON :", err));
+    .catch(err => console.error("❌ Erreur JSON :", err));
 
-    // Initialise la barre de boutons 1–17
-    function initNumberBar() {
+    function initNumberBar(){
+      const sdgColors = [
+        "#E5243B","#DDA63A","#4C9F38","#C5192D","#FF3A21",
+        "#26BDE2","#FCC30B","#A21942","#FD6925","#DD1367",
+        "#FD9D24","#BF8B2E","#3F7E44","#0A97D9","#56C02B",
+        "#00689D","#19486A"
+      ];
+      const sdgNames = [
+        "Pas de pauvreté","Faim « zéro »","Bonne santé","Éducation",
+        "Égalité","Eau propre","Énergie","Travail décent",
+        "Industrie","Inégalités","Villes","Consommation",
+        "Climat","Vie aquatique","Vie terrestre","Paix","Partenariats"
+      ];
       const bar = d3.select("#number-bar");
-      for (let i = 1; i <= 17; i++) {
+      for(let i=1; i<=17; i++){
         bar.append("button")
-          .text(i)
-          .style("background-color", sdgColors[i-1])
-          .style("border", `1px solid ${sdgColors[i-1]}`)
-          .style("color", "#fff")
-          .on("click", () => {
-            const list  = actions.filter(a => a.num.includes(i));
-            const title = `${i}. ${sdgNames[i-1]}`;
-            openModal(list, title);
-          });
+           .text(i)
+           .style("background-color",sdgColors[i-1])
+           .style("border",`1px solid ${sdgColors[i-1]}`)
+           .style("color","#fff")
+           .on("click",()=>{
+             const list = actions.filter(a=> a.num.includes(i));
+             const title = `${i}. ${sdgNames[i-1]}`;
+             openModal(list,title);
+           });
       }
     }
 
-    // Garde pour ne pas dessiner avant chargement
-    function render() {
-      if (!data) return;
+    function render(){
+      console.log("▶️ render() appelé, data défini ?", !!data);
+      if(!data) return;
+
       const container = document.getElementById("chart");
+      console.log(" → nettoyage du container #chart");
       container.innerHTML = "";
-      container.appendChild(chart());
+
+      console.log(" → appel chart()");
+      const svgEl = chart();
+      console.log(" ← chart() a retourné :", svgEl.tagName, svgEl.getAttribute("viewBox"));
+      container.appendChild(svgEl);
+
+      console.log(" → appel update()");
       update();
     }
 
