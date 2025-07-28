@@ -144,7 +144,10 @@
   <div id="modal-overlay"><div id="modal"></div></div>
 
   <script>
-let data, indicators, actions;
+	  
+let data       = null;
+let indicators = [];   // tableau vide, pas undefined
+let actions    = [];
 
 function initNumberBar() {
   const bar = d3.select("#number-bar");
