@@ -150,11 +150,14 @@ function initNumberBar() {
   const bar = d3.select("#number-bar");
   for (let i = 1; i <= 17; i++) {
     bar.append("button")
-       … 
+       .text(i)
+       .style("background-color", sdgColors[i - 1])
+       .style("border", `1px solid ${sdgColors[i - 1]}`)
+       .style("color", "#fff")
        .on("click", () => {
-         // À ce stade, `actions` est déjà chargé
-         const list = actions.filter(a => a.num.includes(i));
-         openModal(list, `${i}. ${sdgNames[i-1]}`);
+         const list  = actions.filter(a => a.num.includes(i));
+         const title = `${i}. ${sdgNames[i - 1]}`;
+         openModal(list, title);
        });
   }
 }
