@@ -222,20 +222,6 @@ let currentAxe = null; // null → global
 	  "Paix, justice et institutions efficaces",
 	  "Partenariats pour la réalisation des objectifs"
 	];
-	
-	const bar = d3.select("#number-bar");
-	for (let i = 1; i <= 17; i++) {
-	  bar.append("button")
-		 .text(i)
-		 .style("background-color", sdgColors[i - 1])
-		 .style("border",        `1px solid ${sdgColors[i - 1]}`)
-		 .style("color",         "#fff")
-		 .on("click", () => {
-		   const list  = actions.filter(a => a.num.includes(i));
-		   const title = `${i}. ${sdgNames[i - 1]}`;
-		   openModal(list, title);
-		 });
-	}
 
   // ----- Modal -----
 	const overlay = d3.select("#modal-overlay");
