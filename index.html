@@ -151,12 +151,13 @@ Promise.all([
   d3.json("indicators.json"),
   d3.json("actions.json")
 ])
+initNumberBar();
+console.log("Barre initialisée, actions :", actions.length);
 .then(([treeData, indicatorsJSON, actionsJSON]) => {
   data       = treeData;       
   indicators = indicatorsJSON;
   actions    = actionsJSON;
 
-  initNumberBar();
   d3.select("#indicator-btn").on("click", openIndicatorsModal);
   
   window.addEventListener("resize", render);
@@ -323,6 +324,7 @@ let currentAxe = null; // null → global
   const container = document.getElementById("chart");
 
   function chart() {
+	  console.log("Entrée chart(), data.root.children :", data.children?.length);
 	  // 1) Dimensions du conteneur
 	  const W = window.innerWidth;
 	  const H = window.innerHeight;
@@ -371,6 +373,7 @@ let currentAxe = null; // null → global
 	}
 
   function update() {
+	  console.log("Entrée update(), rootHierarchy.descendants() :", rootHierarchy.descendants().length);
 	  tree(rootHierarchy);
 	  applyColors(rootHierarchy);
 
@@ -478,7 +481,6 @@ let currentAxe = null; // null → global
 	  update();                          
   }
 
-  window.addEventListener("resize", render);
   render();
 	  function computeRatio() {
 	  let subset;
