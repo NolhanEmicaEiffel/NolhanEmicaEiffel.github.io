@@ -1,6 +1,9 @@
 # Arborescence DD&RS
 Cette arborescence a pour objectif de parcourir le schéma directeur DD&RS 2024-30, de l'université Gustave Eiffel, de manière interactive. 
 
+*****A vérifier !!!*****
+Respect des indicateurs mis aléatoirement
+
 ## Composition du projet 
 Le projet est composé de plusieurs fichiers : 1 fichier HTML, 3 fichiers JSON et ce fichier README
 
